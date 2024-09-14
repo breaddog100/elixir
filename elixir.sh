@@ -2,7 +2,7 @@
 
 
 # 设置版本号
-current_version=20240914002
+current_version=20240914003
 
 update_script() {
     # 指定URL
@@ -46,8 +46,13 @@ function install_node() {
 
     # 运行参数
     read -p "节点名称: " VALIDATOR_NAME
-    read -p "钱包地址: " SAFE_PUBLIC_ADDRESS
-    read -p "钱包私钥: " PRIVATE_KEY
+    read -p "EVM钱包地址: " SAFE_PUBLIC_ADDRESS
+    read -p "EVM钱包私钥: " PRIVATE_KEY
+
+    # 检查并去掉PRIVATE_KEY中的0x前缀
+    if [[ "$PRIVATE_KEY" == 0x* ]]; then
+        PRIVATE_KEY=${PRIVATE_KEY:2}
+    fi
 
     # 创建validator.env
     cat <<EOF > validator.env
@@ -90,7 +95,24 @@ EOF
 
 # 查看日志
 function view_logs() {
-    docker logs -f elixir
+    sudo docker logs -f elixir
+}
+
+# 启动节点
+function start_node(){
+    sudo docker run -it -d --env-file validator.env --name elixir elixirprotocol/validator:v3
+}
+
+# 停止节点
+function stop_node(){
+    sudo docker stop elixir
+}
+
+# 升级节点
+function update_node(){
+    sudo docker kill elixir
+    sudo docker rm elixir
+    sudo docker pull elixirprotocol/validator:v3
 }
 
 # 卸载节点
@@ -101,7 +123,7 @@ function uninstall_node() {
         [yY][eE][sS]|[yY]) 
             echo "开始卸载验证节点..."
             stop_node
-            docker rm -f elixir && docker rmi elixir
+            sudo docker rm -f elixir && docker rmi elixir
             echo "验证节点卸载完成。"
             ;;
         *)
@@ -121,6 +143,9 @@ function main_menu() {
 	    echo "请选择要执行的操作:"
 	    echo "1. 部署节点 install_node"
 	    echo "2. 查看日志 view_logs"
+        echo "3. 启动节点 start_node"
+        echo "4. 停止节点 stop_node"
+        echo "5. 升级节点 update_node"
 	    echo "1618. 卸载节点 uninstall_node"
 	    echo "0. 退出脚本 exit"
 	    read -p "请输入选项: " OPTION
@@ -128,6 +153,9 @@ function main_menu() {
 	    case $OPTION in
 	    1) install_node ;;
 	    2) view_logs ;;
+        3) start_node ;;
+        4) stop_node ;;
+        5) update_node ;;
 	    1618) uninstall_node ;;
 	    0) echo "退出脚本。"; exit 0 ;;
 	    *) echo "无效选项，请重新输入。"; sleep 3 ;;
