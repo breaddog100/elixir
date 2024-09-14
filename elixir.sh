@@ -2,7 +2,7 @@
 
 
 # 设置版本号
-current_version=20240914001
+current_version=20240914002
 
 update_script() {
     # 指定URL
@@ -82,8 +82,8 @@ EOF
 	sudo usermod -aG docker $USER
 
     # 拉取项目镜像
-    docker pull elixirprotocol/validator:v3
-    docker run -it -d --env-file validator.env --name elixir elixirprotocol/validator:v3
+    sudo docker pull elixirprotocol/validator:v3
+    sudo docker run -it -d --env-file validator.env --name elixir elixirprotocol/validator:v3
 
     echo "部署完成..."
 }
