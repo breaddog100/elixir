@@ -2,7 +2,7 @@
 
 
 # 设置版本号
-current_version=20240914003
+current_version=20240916001
 
 update_script() {
     # 指定URL
@@ -139,7 +139,7 @@ function main_menu() {
 	    echo "======================= Elixir 一键部署脚本======================="
 		echo "当前版本：$current_version"
 		echo "沟通电报群：https://t.me/lumaogogogo"
-		echo "推荐配置：12C24G300G;CPU核心越多越好"
+		echo "推荐配置：4C8G100G"
 	    echo "请选择要执行的操作:"
 	    echo "1. 部署节点 install_node"
 	    echo "2. 查看日志 view_logs"
